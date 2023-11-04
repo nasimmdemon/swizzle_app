@@ -1,0 +1,87 @@
+const appName = "Swizzle",
+    appVersion = "version: 1.0",
+    credits = "Created by Emon Adi",
+    developerContact = "https://emonadi.com",
+    adminEmail = "nasimmdemon@gmail.com",
+    currency = "kr",
+    mesasure = "pc",
+    adminPassword = "Emon4288@";
+
+// Login Screen
+const login = "Login",
+    signup = "Sign up",
+    signin = "Sign in",
+    emailAddress = "Email address",
+    emailPlaceholder = "me@emonadi.com",
+    password = "Password",
+    name = "Name",
+    namePlaceholder = "Emon Adi",
+    confirmPassword = "Confirm Password",
+    donthaveanaccount = "Don't have an account? ",
+    passwordPlaceholder = "******",
+    createOne = "Create one",
+    btnContinue = "Continue",
+    continuewithapple = "Continue With Apple",
+    continueWithGoogle = "Continue With Google",
+    continuewithFacebook = "Continue With Facebook",
+    alreadyHaveAnAccount = "Already have an account? ",
+    basicValidation = "Please fill this field",
+    typeAtLeast = "Please type at least 8 carecters",
+    invalidEmail = "Invalid Email",
+    passwordDoesnotMatch = "Password doesn't match",
+    serverError = "Server Error. Please try again",
+    emailAlreadyExits = "Email Already Exits",
+    pleaseWait = "Please Wait",
+    welcome = "Welcome",
+    emailOrPasswordDoesntMatch = "Email or password doesn't match",
+    home = "Home",
+    favourite = "Favourite",
+    order = "Order",
+    profile = "Profile",
+    socialSignInWillAvailibleSoon = "Social Signin will be avalible soon",
+    yes = "Yes",
+    no = "No",
+    areYouSureWantToLogout = 'Are you sure want to logout?';
+
+//Admin App
+const admin = "Admin",
+    addProduct = "Add Product",
+    orders = "Orders",
+    adminProfile = "Admin Profile",
+    pickImage = "Pick Image",
+    changeImage = "Change Image",
+    preview = "Preview",
+    loadingImage = "Loading Image...";
+//Admin Add Product Screen
+const itemName = "Item Name",
+    itemNameHint = "Enter Item Name",
+    itemRating = "Item Rating",
+    itemRatingHint = "Enter Item Rating",
+    itemDescription = "Item Description",
+    itemDescriptionHint = "Enter Item Description",
+    itemPrice = "Item Price(kr)",
+    uploadProduct = "Upload product",
+    uploadingProduct = "Uploading Product",
+    productUploaded = "Product Uploaded Successfully",
+    imageUploaded = "Image Uploaded Successfully",
+    description = "Description",
+    addToCart = "Add to cart",
+    itemPriceHint = "Enter Item Price(kr)";
+
+//Item add to cart
+const itemAdded = "Item added successfully",
+    somethingWentWrong = "Something went wrong. Please try again",
+    quantityUpdated = "Quantity updated in cart ",
+    itemRemoved = "Item removed",
+    unselectItemFirst = "Unselect the item first",
+    cartisEmptyAddSome = "Your cart it empty. Add some!";
+
+// Wishlist Screen
+
+const itemAddedToFavourite = "Item added to favourite",
+    itemRemovedFromFavourite = "Item removed from favourite",
+    onSale = "On Sale!",
+    delete = "Delete",
+    search = "Search",
+    exploreProducts = "Explore the products",
+    noItemInFavAddSome = "No Item in the favourite. Add some!";
