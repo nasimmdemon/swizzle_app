@@ -10,6 +10,7 @@ import 'package:swizzle/consts/consts.dart';
 
 class ItemUploadController extends GetxController {
   final picker = ImagePicker();
+  var itemType = 0.obs;
   var isLoading = false.obs;
   var isUploading = false.obs;
   File? image_file;
@@ -20,6 +21,8 @@ class ItemUploadController extends GetxController {
   var itemNameController = TextEditingController();
   var itemDescController = TextEditingController();
   var itemPriceController = TextEditingController();
+  var itemSalePriceController = TextEditingController(text: 0.toString());
+  var itemVariationsController = TextEditingController();
 
   Future pickImageFromPhoneGallery() async {
     isLoading(true);
@@ -61,21 +64,44 @@ class ItemUploadController extends GetxController {
   }
 
   uploadProductOnDatabase() async {
-    try {
-      var res = await http.post(Uri.parse(Api.adminUpload), body: {
-        'item_name': itemNameController.text.trim(),
-        'item_description': itemDescController.text.trim(),
-        'item_price': itemPriceController.text.trim(),
-        'item_image': image_link.toString(),
-        'item_status': '1',
-        'item_type': 'simple',
-      });
+    if (itemType.value == 0) {
+      try {
+        var res = await http.post(Uri.parse(Api.adminUpload), body: {
+          'item_name': itemNameController.text.trim(),
+          'item_description': itemDescController.text.trim(),
+          'item_price': itemPriceController.text.trim(),
+          'item_image': image_link.toString(),
+          'item_status': '1',
+          'item_type': 'simple',
+          'sale_price': itemSalePriceController.text.trim(),
+          'item_variations': 'no variations'
+        });
 
-      if (res.statusCode == 200) {
-        print('Uploaded');
+        if (res.statusCode == 200) {
+          print('Uploaded');
+        }
+      } catch (e) {
+        print(e.toString());
       }
-    } catch (e) {
-      print(e.toString());
+    } else {
+      try {
+        var res = await http.post(Uri.parse(Api.adminUpload), body: {
+          'item_name': itemNameController.text.trim(),
+          'item_description': itemDescController.text.trim(),
+          'item_price': itemPriceController.text.trim(),
+          'item_image': image_link.toString(),
+          'item_status': '1',
+          'item_type': 'variable',
+          'sale_price': itemSalePriceController.text.trim(),
+          'item_variations': [itemVariationsController.text.trim()].toString(),
+        });
+
+        if (res.statusCode == 200) {
+          print('Uploaded');
+        }
+      } catch (e) {
+        print(e.toString());
+      }
     }
   }
 }

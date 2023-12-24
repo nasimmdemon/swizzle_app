@@ -50,6 +50,30 @@ class AdminAddProductScreen extends StatelessWidget {
                             ),
                     )),
                     10.heightBox,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        4.widthBox,
+                        '$itemType :'.text.make(),
+                        4.widthBox,
+                        Icon(controller.itemType.value == 0
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_off_outlined)
+                            .onTap(() {
+                          controller.itemType.value = 0;
+                        }),
+                        simpleItem.text.make(),
+                        4.widthBox,
+                        Icon(controller.itemType.value == 1
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_off_outlined)
+                            .onTap(() {
+                          controller.itemType.value = 1;
+                        }),
+                        variableItem.text.make(),
+                      ],
+                    ),
+                    10.heightBox,
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 75, vertical: 10),
@@ -106,6 +130,27 @@ class AdminAddProductScreen extends StatelessWidget {
                               }
                             },
                             inputType: TextInputType.number),
+                        10.heightBox,
+                        customTextField(
+                            controller: controller.itemSalePriceController,
+                            label: itemSalePrice,
+                            hint: itemSalePriceHint,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return basicValidation;
+                              } else {
+                                return null;
+                              }
+                            },
+                            inputType: TextInputType.number),
+                        10.heightBox,
+                        controller.itemType.value == 1
+                            ? customTextField(
+                                controller: controller.itemVariationsController,
+                                label: itemVariations,
+                                hint: itemVariationHints,
+                                inputType: TextInputType.text)
+                            : Container(),
                         10.heightBox,
                         customButton(
                             title: uploadProduct,

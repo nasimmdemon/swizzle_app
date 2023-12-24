@@ -22,13 +22,17 @@ class CartController extends GetxController {
     update();
   }
 
-  removeFromCart(int userId) {
-    for (var element in cartList) {
+  removeFromCart(int userId) async {
+    for (Cart element in cartList) {
       if (selectedItem.contains(element.item_id)) {
-        removeSingleCart(element.cart_id, userId);
-        removeAllSelectedItem();
-        update();
+        await removeSingleCart(element.cart_id, userId);
+        _isSelectedAll(false);
+        removeSelectedItem(element.item_id);
       }
+      // if (selectedItem.contains(element.item_id)) {
+      //   await removeSingleCart(element.cart_id, userId);
+      //   removeAllSelectedItem();
+      // }
     }
   }
 
@@ -114,7 +118,6 @@ class CartController extends GetxController {
       if (res.statusCode == 200) {
         var resBody = jsonDecode(res.body);
         if (resBody['success']) {
-          Fluttertoast.showToast(msg: itemRemoved);
           fetchUserCartList(userId);
           update();
         }

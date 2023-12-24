@@ -4,6 +4,7 @@ Widget customTextField({
   String? hint = "hint goes here",
   String? label = "Label goes here",
   bool isPass = false,
+  String? initialValue,
   int maxLines = 1,
   TextInputType inputType = TextInputType.text,
   TextInputAction inputAction = TextInputAction.done,
@@ -18,6 +19,7 @@ Widget customTextField({
     textInputAction: inputAction,
     keyboardType: inputType,
     autofocus: false,
+    initialValue: initialValue,
     decoration: InputDecoration(
         hintText: hint,
         labelText: label,

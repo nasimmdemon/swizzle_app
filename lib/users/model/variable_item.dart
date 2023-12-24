@@ -1,6 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
-
-class Item {
+class VariableItem {
   int item_id;
   String item_name;
   String item_description;
@@ -11,7 +9,7 @@ class Item {
   String item_image;
   String item_variations;
 
-  Item(
+  VariableItem(
       this.item_id,
       this.item_name,
       this.item_description,
@@ -22,7 +20,7 @@ class Item {
       this.item_image,
       this.item_variations);
 
-  factory Item.fromJson(Map<String, dynamic> json) => Item(
+  factory VariableItem.fromJson(Map<String, dynamic> json) => VariableItem(
         int.parse(json['item_id']),
         json['item_name'],
         json['item_description'],

@@ -9,6 +9,7 @@ import 'package:swizzle/users/model/items.dart';
 class HomeController extends GetxController {
   final RxList<Item> _flashSaleProducts = <Item>[].obs;
   final RxList<Item> _latestProduct = <Item>[].obs;
+  final RxList<Item> _variableProduct = <Item>[].obs;
   final RxList<Item> _searchItems = <Item>[].obs;
   final RxList _sliderItems = [].obs;
   RxBool searcing = false.obs;
@@ -16,6 +17,7 @@ class HomeController extends GetxController {
   var shimmer = true.obs;
 
   List<Item> get flashSaleProducts => _flashSaleProducts.value;
+  List<Item> get variableProduct => _variableProduct.value;
   List<Item> get latestProduct => _latestProduct.value;
   List<Item> get searchItems => _searchItems.value;
   List get sliderItems => _sliderItems.value;
@@ -99,6 +101,25 @@ class HomeController extends GetxController {
     }
 
     _latestProduct.value = latestProduct;
+  }
+
+  Future fetchVariableItem() async {
+    List<Item> variableItems = [];
+    try {
+      var res = await http.post(Uri.parse(Api.variableItem));
+      if (res.statusCode == 200) {
+        var resBody = jsonDecode(res.body);
+        if (resBody['success']) {
+          for (var item in (resBody['items'] as List)) {
+            variableItems.add(Item.fromJson(item));
+          }
+        }
+      }
+
+      _variableProduct.value = variableItems;
+    } catch (error) {
+      rethrow;
+    }
   }
 
   sliderImageFetch() async {

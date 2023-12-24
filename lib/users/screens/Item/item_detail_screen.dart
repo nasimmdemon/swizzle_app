@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:swizzle/consts/consts.dart';
 import 'package:swizzle/users/controllers/cart_controller.dart';
 import 'package:swizzle/users/controllers/current_user.dart';
@@ -18,6 +19,28 @@ class ItemDetailScreen extends StatelessWidget {
     var favController = Get.put(FavouriteController());
     int userId = Get.find<CurrentUser>().user.user_id;
 
+    void showDialog(Widget child) {
+      showCupertinoModalPopup<void>(
+        context: context,
+        builder: (BuildContext context) => Container(
+          height: 216,
+          padding: const EdgeInsets.only(top: 6.0),
+          // The Bottom margin is provided to align the popup above the system navigation bar.
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          // Provide a background color for the popup.
+          color: CupertinoColors.systemBackground.resolveFrom(context),
+          // Use a SafeArea widget to avoid system overlaps.
+          child: SafeArea(
+            top: false,
+            child: child,
+          ),
+        ),
+      );
+    }
+
+    List<String> variations = itemData.item_variations.split(',');
     return Scaffold(
       appBar: AppBar(
         title: Text(itemData.item_name),
@@ -28,7 +51,12 @@ class ItemDetailScreen extends StatelessWidget {
             child: Hero(
                 key: imageAnimation,
                 tag: 'item${itemData.item_id}',
-                child: Image.network(itemData.item_image)),
+                child: Image.network(
+                  itemData.item_image,
+                  fit: BoxFit.cover,
+                  height: 400,
+                  width: double.infinity,
+                )),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -89,39 +117,41 @@ class ItemDetailScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    if (controller.quantity.value > 1) {
-                                      controller.quantity.value =
-                                          controller.quantity.value - 1;
-                                    }
-                                  },
-                                  icon: const Icon(
-                                    Icons.remove,
-                                    color: redColor,
-                                  )),
-                              Obx(
-                                () => Text(controller.quantity.toString())
-                                    .box
-                                    .shadow
-                                    .white
-                                    .padding(const EdgeInsets.all(10))
-                                    .roundedSM
-                                    .make(),
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    controller.quantity.value =
-                                        controller.quantity.value + 1;
-                                  },
-                                  icon: const Icon(
-                                    Icons.add,
-                                    color: Colors.green,
-                                  )),
-                            ],
-                          ),
+                          itemData.item_type == 'simple'
+                              ? Row(
+                                  children: [
+                                    IconButton(
+                                        onPressed: () {
+                                          if (controller.quantity.value > 1) {
+                                            controller.quantity.value =
+                                                controller.quantity.value - 1;
+                                          }
+                                        },
+                                        icon: const Icon(
+                                          Icons.remove,
+                                          color: redColor,
+                                        )),
+                                    Obx(
+                                      () => Text(controller.quantity.toString())
+                                          .box
+                                          .shadow
+                                          .white
+                                          .padding(const EdgeInsets.all(10))
+                                          .roundedSM
+                                          .make(),
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                          controller.quantity.value =
+                                              controller.quantity.value + 1;
+                                        },
+                                        icon: const Icon(
+                                          Icons.add,
+                                          color: Colors.green,
+                                        )),
+                                  ],
+                                )
+                              : Container(),
                           Obx(
                             () => itemData.item_sale_price == 0
                                 ? "$currency ${itemData.item_price * controller.quantity.value}"
@@ -153,7 +183,17 @@ class ItemDetailScreen extends StatelessWidget {
                       description.text.size(18).bold.make(),
                       10.heightBox,
                       itemData.item_description.text.make(),
+                      itemData.item_type == 'variable'
+                          ? 10.heightBox
+                          : Container(),
+                      itemData.item_type == 'variable'
+                          ? '${variationName}s'.text.size(18).bold.make()
+                          : Container(),
                       10.heightBox,
+                      itemData.item_type == 'variable'
+                          ? variations.toString().text.size(18).makeCentered()
+                          : Container(),
+                      20.heightBox,
                       customButton(
                           ontap: () {
                             // controller.addToCart(
@@ -161,8 +201,17 @@ class ItemDetailScreen extends StatelessWidget {
 
                             controller.chechIfItemInCart(
                                 userId, itemData.item_id);
+                            Get.back();
                           },
-                          title: addToCart)
+                          title: addToCart),
+                      itemData.item_type == 'variable'
+                          ? 20.heightBox
+                          : Container(),
+                      itemData.item_type == 'variable'
+                          ? yourVariationsWillBeAutomaticallySelected.text
+                              .align(TextAlign.center)
+                              .makeCentered()
+                          : Container()
                     ],
                   ),
                 ),

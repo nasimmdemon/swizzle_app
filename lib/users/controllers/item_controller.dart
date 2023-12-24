@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 
 class ItemController extends GetxController {
   RxInt quantity = 1.obs;
+  //selectedVariations
   var currentUser = Get.find<CurrentUser>();
 
   chechIfItemInCart(int userId, int itemId) async {

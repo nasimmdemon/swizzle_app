@@ -3,8 +3,10 @@ import 'package:swizzle/consts/consts.dart';
 import '../../widgets/custom_button.dart';
 
 class CustomBottomSheet extends GetxController {
-  openBottomSheet(context, String content, onTap, String btnTitle) {
+  openBottomSheet(context, String content, onTap, String btnTitle,
+      [bool isDismissable = true]) {
     showModalBottomSheet(
+        isDismissible: isDismissable,
         context: context,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(30))),

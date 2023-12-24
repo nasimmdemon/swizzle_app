@@ -1,6 +1,10 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:swizzle/consts/consts.dart';
 import 'package:swizzle/users/controllers/cart_controller.dart';
 import 'package:swizzle/users/controllers/current_user.dart';
+import 'package:swizzle/users/controllers/custom_bottom_sheet.dart';
+import 'package:swizzle/users/screens/Shipping/shipping_screen.dart';
 
 import '../../../widgets/custom_button.dart';
 import '../../model/cart.dart';
@@ -34,7 +38,11 @@ class _CartScreenState extends State<CartScreen> {
             () => controller.grandTotal > 0
                 ? IconButton(
                     onPressed: () {
-                      controller.removeFromCart(currentUser.user.user_id);
+                      CustomBottomSheet().openBottomSheet(
+                          context, areYouSureWantToRemoveTheSelectedItems, () {
+                        controller.removeFromCart(currentUser.user.user_id);
+                        Get.back();
+                      }, yes);
                     },
                     icon: const Icon(Icons.delete))
                 : Container(),
@@ -58,6 +66,10 @@ class _CartScreenState extends State<CartScreen> {
       ),
       body: Column(
         children: [
+          10.heightBox,
+          AnimatedTextKit(
+              totalRepeatCount: 1,
+              animatedTexts: [ScaleAnimatedText(slideLeftToRemove)]),
           SizedBox(
               height: context.screenHeight * 0.6,
               child: Obx(
@@ -72,7 +84,24 @@ class _CartScreenState extends State<CartScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Obx(
               () => customButton(
-                  ontap: () {},
+                  ontap: controller.cartList.isNotEmpty &&
+                          controller.selectedItem.isNotEmpty
+                      ? () {
+                          Get.to(() {
+                            List<Cart> selectedItemForOrder = [];
+                            for (var singleCartItem in controller.cartList) {
+                              if (controller.selectedItem
+                                  .contains(singleCartItem.item_id)) {
+                                selectedItemForOrder.add(singleCartItem);
+                              }
+                            }
+                            return ShippingScreen(
+                              total: controller.grandTotal,
+                              cartInforMation: selectedItemForOrder,
+                            );
+                          });
+                        }
+                      : null,
                   title: "Continue ${controller.grandTotal}$currency"),
             ),
           ),
@@ -92,47 +121,16 @@ class _CartScreenState extends State<CartScreen> {
           return GestureDetector(
             child: Container(
               margin: EdgeInsets.only(bottom: cartItem == 0 ? 0 : 10),
-              child: Row(
-                children: [
-                  GetBuilder(
-                    init: CartController(),
-                    builder: (c) => IconButton(
-                        onPressed: () {
-                          if (controller.selectedItem
-                              .contains(cartItem.item_id)) {
-                            controller.removeSelectedItem(cartItem.item_id);
-                          } else {
-                            controller.addSelectedItem(cartItem.item_id);
-                          }
-                        },
-                        icon: Icon(
-                            controller.selectedItem.contains(cartItem.item_id)
-                                ? Icons.check_box
-                                : Icons.check_box_outline_blank)),
-                  ),
-                  Image.network(
-                    cartItem.item_image,
-                    height: 80,
-                    width: 80,
-                    fit: BoxFit.cover,
-                  ),
-                  Expanded(
-                    child: Text(
-                      cartItem.item_name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Text("${cartItem.item_qty.toString()}$mesasure"),
-                  10.widthBox,
-                  "${cartItem.sale_price == 0 ? (cartItem.item_price * cartItem.item_qty) : (cartItem.sale_price * cartItem.item_qty)}$currency"
-                      .text
-                      .bold
-                      .make(),
-                  10.heightBox,
-                  IconButton(
-                      color: redColor,
-                      onPressed: () {
+              child: Slidable(
+                endActionPane:
+                    ActionPane(motion: const StretchMotion(), children: [
+                  SlidableAction(
+                    onPressed: (_) {
+                      CustomBottomSheet().openBottomSheet(
+                          context,
+                          cartItem.item_qty > 1
+                              ? thisWillRemoveSingleQuantity
+                              : areYouSureWantToRemoveTheItem, () {
                         if (controller.selectedItem
                             .contains(cartItem.item_id)) {
                           controller.removeSelectedItem(cartItem.item_id);
@@ -152,10 +150,145 @@ class _CartScreenState extends State<CartScreen> {
                                 cartItem.cart_id, currentUser.user.user_id);
                           }
                         }
-                      },
-                      icon: const Icon(Icons.remove))
-                ],
+                        Get.back();
+                      }, yes);
+                    },
+                    backgroundColor: redColor,
+                    foregroundColor: Colors.white,
+                    icon: Icons.delete,
+                    label: delete,
+                  ),
+                ]),
+                child: GetBuilder(
+                  init: CartController(),
+                  builder: (_) => Stack(
+                    alignment: AlignmentDirectional.topEnd,
+                    fit: StackFit.loose,
+                    children: [
+                      Container(
+                        margin:
+                            EdgeInsets.fromLTRB(10, index == 0 ? 7 : 10, 10, 5),
+                        height: 100,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  if (controller.selectedItem
+                                      .contains(cartItem.item_id)) {
+                                    controller
+                                        .removeSelectedItem(cartItem.item_id);
+                                  } else {
+                                    controller
+                                        .addSelectedItem(cartItem.item_id);
+                                  }
+                                },
+                                icon: Icon(controller.selectedItem
+                                        .contains(cartItem.item_id)
+                                    ? Icons.check_box
+                                    : Icons.check_box_outline_blank)),
+                            Hero(
+                              tag: "item${cartItem.item_id}",
+                              child: Image.network(
+                                cartItem.item_image,
+                                fit: BoxFit.cover,
+                              )
+                                  .box
+                                  .roundedLg
+                                  .size(100, 100)
+                                  .clip(Clip.antiAlias)
+                                  .make(),
+                            ),
+                            10.widthBox,
+                            Expanded(
+                              child: Text(
+                                cartItem.item_name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            5.widthBox,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                "${cartItem.sale_price == 0 ? (cartItem.item_price * cartItem.item_qty) : (cartItem.sale_price * cartItem.item_qty)}$currency"
+                                    .text
+                                    .bold
+                                    .make(),
+                                Text("${cartItem.item_qty.toString()}$mesasure")
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                          .box
+                          .shadowSm
+                          .margin(const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 5))
+                          .color(Colors.white.withOpacity(0.9))
+                          .roundedLg
+                          .make(),
+                      cartItem.sale_price > 0
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 3, horizontal: 8),
+                              color: redColor,
+                              child: onSale.text.white.make(),
+                            ).box.rounded.clip(Clip.antiAlias).make()
+                          : Container(),
+                    ],
+                  ),
+                ),
               ),
+              // Image.network(
+              //   cartItem.item_image,
+              //   height: 80,
+              //   width: 80,
+              //   fit: BoxFit.cover,
+              // ),
+              // Expanded(
+              //   child: Text(
+              //     cartItem.item_name,
+              //     maxLines: 1,
+              //     overflow: TextOverflow.ellipsis,
+              //   ),
+              // ),
+              // Text("${cartItem.item_qty.toString()}$mesasure"),
+              // 10.widthBox,
+              // "${cartItem.sale_price == 0 ? (cartItem.item_price * cartItem.item_qty) : (cartItem.sale_price * cartItem.item_qty)}$currency"
+              //     .text
+              //     .bold
+              //     .make(),
+              // 10.heightBox,
+              // IconButton(
+              //     color: redColor,
+              //     onPressed: () {
+              // CustomBottomSheet().openBottomSheet(
+              //     context, areYouSureWantToRemoveTheItem, () {
+              //   if (controller.selectedItem
+              //       .contains(cartItem.item_id)) {
+              //     controller.removeSelectedItem(cartItem.item_id);
+              //     if (cartItem.item_qty > 1) {
+              //       controller.reduceCartQuantity(
+              //           cartItem.cart_id, currentUser.user.user_id);
+              //     } else {
+              //       controller.removeSingleCart(
+              //           cartItem.cart_id, currentUser.user.user_id);
+              //     }
+              //   } else {
+              //     if (cartItem.item_qty > 1) {
+              //       controller.reduceCartQuantity(
+              //           cartItem.cart_id, currentUser.user.user_id);
+              //     } else {
+              //       controller.removeSingleCart(
+              //           cartItem.cart_id, currentUser.user.user_id);
+              //     }
+              //   }
+              //   Get.back();
+              // }, yes);
+              //     },
+              //     icon: const Icon(Icons.remove))
             ),
           );
         });
